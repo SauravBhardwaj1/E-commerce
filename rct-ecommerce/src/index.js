@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AppProvider } from './Context/ProductContext';
 import { FilterContextProvider } from './Context/Filter_Context';
+import { CartProvider } from './Context/Cart_context';
 
 
 
@@ -13,7 +14,9 @@ root.render(
   
     <AppProvider>
       <FilterContextProvider>
+        <CartProvider>  
         <App />
+        </CartProvider>
       </FilterContextProvider>
     </AppProvider>
 );

@@ -1,10 +1,36 @@
 import React from 'react';
 import styled from "styled-components"
 import { useFilterContext } from '../Context/Filter_Context';
+import {FaCheck} from "react-icons/fa"
+import FormatPrice from '../Helpers/FormatPrice';
+import {Button} from "../Styles/Button"
 
 const FilterSection = () => {
 
-  const {filter:{text}, updateFilterValue} = useFilterContext()
+  const {filter:{text,category, colors, price, maxPrice, minPrice},all_products, updateFilterValue, clearFilters} = useFilterContext()
+
+  // TO GET THE UNIQUE DATA OF EACH FIELDS
+  const getUniqueData = (data, property)=>{
+    let newVal = data.map((el)=>{
+      return el[property];
+    });
+
+    if(property === "colors"){
+      return (newVal = ["all", ...new Set([].concat(...newVal))])
+    }else{
+      return (newVal = ["all", ...new Set(newVal)]);
+    }
+    
+  } 
+  // We need Unique Data
+  const categoryOnlyData = getUniqueData(all_products, "category");
+  
+  const companyData = getUniqueData(all_products, "company");
+
+  const colorsData = getUniqueData(all_products, "colors");
+
+  // console.log(colorsData)
+
   return (
     <Wrapper>
       <div className="filter-section">
@@ -13,9 +39,100 @@ const FilterSection = () => {
             type="text" 
             name='text' 
             value={text} 
-            onChange={updateFilterValue} />
+            onChange={updateFilterValue}
+            placeholder="SEARCH" />
         </form>
       </div>
+      <div className="filter-category">
+        <h3>Category</h3>
+        <div>
+          {
+            categoryOnlyData.map((el,index)=>{
+              return (
+              <button 
+                key={index} 
+                type="button" 
+                name="category" 
+                value={el} 
+                className={el === category ? "active" : ""} 
+                onClick={updateFilterValue }>
+                {el}
+              </button>
+              )
+            })
+          }
+        </div>
+      </div>
+      <div className="filter-company">
+        <h3>Company</h3>
+        <form action='#'>
+          <select name="company" 
+            id="company" 
+            className='filter-company--select' 
+            onClick={updateFilterValue}>
+            {
+            companyData.map((el, index)=>{
+              // console.log(companyData)
+              return(
+                <option value={el} key={index} name="company">
+                  {el}
+                </option>
+              )
+            })}
+          </select>         
+        </form>
+      </div>
+      <div className="filter-colors colors">
+        <h3>Colors</h3>
+        <div className="filter-color-style">
+          {
+            colorsData.map((el, index)=>{
+              if(el === "all"){
+                return(
+                  <button
+                  key={index} 
+                  type='button'
+                  className='color-all--style'
+                  value={el}
+                  name="colors"
+                  onClick={updateFilterValue}>
+                    all
+                </button>
+                )
+              }
+              return(
+                <button
+                  key={index} 
+                  type='button'
+                  className={colors == el ? 'btnStyle active' : "btnStyle"}
+                  value={el}
+                  name="colors"
+                  style={{backgroundColor: el}}
+                  onClick={updateFilterValue}>
+                    {colors == el ? <FaCheck className='checkStyle' /> : null}
+                </button>
+              )
+            })
+          }
+        </div> 
+      </div>
+      <div className="filter_price">
+        <h3>Price</h3>
+        <p><FormatPrice price={price} /></p>
+        <input 
+          type="range" 
+          name='price'
+          min={minPrice} 
+          max={maxPrice} 
+          value={price}
+          onChange={updateFilterValue} 
+        />
+      </div>
+
+      <div className="filter-clear">
+        <Button className="btn" onClick={clearFilters}> Clear Filter</Button>
+      </div>
+
     </Wrapper>
   )
 } 
